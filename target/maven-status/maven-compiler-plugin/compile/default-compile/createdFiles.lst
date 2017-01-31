@@ -1,0 +1,9 @@
+scout24/techChallenge/rest/basic/BasicResource.class
+scout24/techChallenge/rest/basic/BaseApplication.class
+scout24/techChallenge/model/TestUrl.class
+scout24/techChallenge/contants/IConstants.class
+scout24/techChallenge/rest/api/IUrlContentResource.class
+scout24/techChallenge/tasks/HyperLinksTask.class
+scout24/techChallenge/rest/impl/UrlContentResource.class
+scout24/techChallenge/model/Site.class
+scout24/techChallenge/rest/response/WrappedResponse.class
