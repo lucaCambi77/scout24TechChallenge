@@ -1,0 +1,94 @@
+<html ng-app="scout24">
+<div class="jumbotron">
+	<h1>Scou24 Tech Challenge</h1>
+	<h3>Submit your url and check some web analitycs</h3>
+</div>
+
+
+<form class="form-inline" role="form">
+
+	<div uib-alert type="danger" ng-if="main.errors.length > 0">
+		<div>
+			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><br>
+			<span ng-repeat="error in main.errors">{{error}}<br></span>
+
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="form-control-label">Input Url</label>
+		<div class="input-group">
+			<input type="text" class="form-control" ng-model="main.url">
+			<span class="input-group-btn">
+				<button type="button" class="btn btn-default"
+					ng-click="main.submit()">Submit</button>
+			</span>
+		</div>
+	</div>
+
+</form>
+
+<div class="panel panel-default">
+	<div class="panel-body">
+		<div class="table-responsive">
+			<table id="urlContentTable"
+				class="table table-striped table-hover table-condensed table-bordered">
+				<thead>
+					<tr>
+						<th class="tableCentered">Html Version</th>
+						<th class="tableCentered">Title</th>
+						<th class="tableCentered">Headings</th>
+						<th class="tableCentered">Int. Links</th>
+						<th class="tableCentered">Ext. Links</th>
+						<th class="tableCentered">Login From</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					<tr>
+
+						<td>{{main.urlContent.version}}</td>
+
+						<td>{{main.urlContent.title}}</td>
+
+						<td>{{main.urlContent.headingTags}}</td>
+
+						<td>{{main.urlContent.internalLinks}}</td>
+
+						<td>{{main.urlContent.externalLinks}}</td>
+
+						<td>{{main.urlContent.hasLoginForm}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+</div>
+
+<div class="panel panel-default">
+	<div class="panel-body">
+		<div class="table-responsive">
+			<table id="hyperLinksTable"
+				class="table table-striped table-hover table-condensed table-bordered">
+				<thead>
+					<tr>
+						<th class="tableCentered">Link</th>
+						<th class="tableCentered">Return Http Code</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					<tr ng-repeat="(key, value) in main.hyperLinksMap">
+
+						<td>{{key}}</td>
+
+						<td>{{value}}</td>
+
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+</html>

@@ -1,0 +1,54 @@
+apply plugin: 'java'
+
+gradle.startParameter.continueOnFailure = true
+
+group = 'it.cambi'
+
+repositories {
+    mavenLocal()
+    maven {
+        url = 'https://repo.maven.apache.org/maven2'
+    }
+}
+
+gradle.projectsEvaluated {
+    tasks.withType(JavaCompile).tap {
+        configureEach {
+            options.compilerArgs << "-Xlint:unchecked"
+            options.compilerArgs << "-Xlint:deprecation"
+        }
+    }
+}
+
+sourceCompatibility = '1.11'
+targetCompatibility = '1.11'
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-devtools:2.7.7'
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.7.7'
+
+    implementation group: 'commons-validator', name: 'commons-validator', version: '1.7'
+
+    implementation 'org.jsoup:jsoup:1.15.3'
+
+    testImplementation(
+            'junit:junit:4.13.1',
+            'org.codehaus.groovy:groovy-all:3.0.7',
+            'org.spockframework:spock-core:2.1-groovy-3.0',
+            'org.spockframework:spock-spring:2.1-groovy-3.0',
+            'org.springframework.boot:spring-boot-starter-test:2.7.7'
+    )
+}
+
+test {
+    useJUnitPlatform()
+
+    testLogging {
+        events "started", "passed", "skipped", "failed"
+        showExceptions true
+        exceptionFormat "full"
+        showCauses true
+        showStackTraces true
+    }
+}
+
