@@ -28,6 +28,7 @@ import scout24.techChallenge.tasks.HyperLinksTask;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -41,16 +42,16 @@ import java.util.concurrent.FutureTask;
 public class UrlContentResource extends BasicResource {
 
     @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-    public ResponseEntity<String> checkUrlContent(@RequestBody TestUrl url) {
+    public ResponseEntity<WrappedResponse<?>> checkUrlContent(@RequestBody TestUrl url) {
 
         UrlValidator urlValidator = new UrlValidator();
         boolean isValidUrl = urlValidator.isValid(url.getUrl());
         if (!isValidUrl) {
+
             List<String> errors = new ArrayList<>();
             errors.add("Not a valid Url");
 
-            return getObjectMapperResponse(new WrappedResponse<Boolean>().setSuccess(false).setErrorMessages(errors).setResponse());
-
+            return getObjectMapperResponse(WrappedResponse.builder().success(false).errorMessage(errors).build());
         }
 
         try {
@@ -75,12 +76,35 @@ public class UrlContentResource extends BasicResource {
 
             hasLoginForm(doc, site);
 
-            setHyperLinks(domain, doc, site);
+            Elements links = doc.select("a[href]");
 
-            return getObjectMapperResponse(new WrappedResponse<Site>().setEntity(site).setResponse());
+            int internalLinks = 0, externalLinks = 0;
+
+            List<String> hrefList = new ArrayList<>();
+
+            for (Element link : links) {
+                String href = link.attr("abs:href");
+
+                if (!href.isEmpty()) {
+
+                    if (href.contains(domain))
+                        internalLinks++;
+
+                    if (!href.contains(domain))
+                        externalLinks++;
+
+                    hrefList.add(href);
+                }
+            }
+
+            site.setInternalLinks(internalLinks);
+            site.setExternalLinks(externalLinks);
+
+            site.setHyperLinksMap(getHyperLinksMap(hrefList));
+
+            return getObjectMapperResponse(WrappedResponse.builder().entity(site).build());
         } catch (Exception exception) {
-
-            return getObjectMapperResponse(new WrappedResponse<String>(exception).processException().setResponse());
+            return getObjectMapperResponse(WrappedResponse.builder().entity(exception.getMessage()).build());
         }
     }
 
@@ -102,40 +126,20 @@ public class UrlContentResource extends BasicResource {
     }
 
     /**
-     * @param domain
-     * @param doc
-     * @param site
-     * @throws ExecutionException
+     *
+     * @param hrefList href list of the site
+     * @return
      * @throws InterruptedException
+     * @throws ExecutionException
      */
-    private void setHyperLinks(String domain, Document doc, Site site) throws InterruptedException, ExecutionException {
-        Elements links = doc.select("a[href]");
+    private Map<String, Integer> getHyperLinksMap(List<String> hrefList) throws InterruptedException, ExecutionException {
 
-        int internalLinks = 0, externalLinks = 0;
-
-        List<String> linksList = new ArrayList<>();
-
-        /*
-         * Retrieve href
-         */
-        for (Element link : links) {
-            String href = link.attr("abs:href");
-
-            if (!href.isEmpty()) {
-                if (href.contains(domain))
-                    internalLinks++;
-                if (!href.contains(domain))
-                    externalLinks++;
-
-                linksList.add(href);
-            }
-        }
-
+        Map<String, Integer> hyperLinksMap = new HashMap<>();
         /*
          * Create a new ExecutorService with n thread (n is total hyper links sublist size) to execute and store the Futures
          *
          */
-        int linkListSize = linksList.size();
+        int linkListSize = hrefList.size();
         int numberOfThreads = (int) Math.ceil((double) linkListSize / 20);
 
         ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads == 0 ? 1 : numberOfThreads);
@@ -146,7 +150,7 @@ public class UrlContentResource extends BasicResource {
 
         while ((end < linkListSize && start < linkListSize)) {
             end = (start - 1) + 20;
-            List<String> map = Collections.list(Collections.enumeration(linksList)).subList(start == 1 ? 0 : start,
+            List<String> map = Collections.list(Collections.enumeration(hrefList)).subList(start == 1 ? 0 : start,
                     end > linkListSize ? linkListSize - 1 : end);
 
             start = (end + 1) + 20;
@@ -164,14 +168,10 @@ public class UrlContentResource extends BasicResource {
 
         // Wait until all results are available and combine them at the same time
         for (FutureTask<Map<String, Integer>> futureTask : taskList) {
-            for (Map.Entry<String, Integer> stringIntegerEntry : futureTask.get().entrySet()) {
-                site.getHyperLinksMap().put(stringIntegerEntry.getKey(), stringIntegerEntry.getValue());
-            }
+            hyperLinksMap.putAll(futureTask.get());
         }
 
-        site.setInternalLinks(internalLinks);
-        site.setExternalLinks(externalLinks);
-
+        return hyperLinksMap;
     }
 
     /**

@@ -3,15 +3,16 @@
  */
 package scout24.techChallenge.model;
 
+import lombok.Data;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author luca
- *
  */
+@Data
 public class Site {
-
     private String version;
     private String head;
     private String body;
@@ -21,73 +22,4 @@ public class Site {
     private int internalLinks = 0;
     private int externalLinks = 0;
     private Map<String, Integer> hyperLinksMap = new HashMap<>();
-
-    public String getVersion() {
-        return version;
-    }
-
-    public String getHead() {
-        return head;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public void setHead(String head) {
-        this.head = head;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Map<String, Integer> getHeadingTags() {
-        return headingTags;
-    }
-
-    public void setHeadingTags(Map<String, Integer> headingTags) {
-        this.headingTags = headingTags;
-    }
-
-    public boolean isHasLoginForm() {
-        return hasLoginForm;
-    }
-
-    public void setHasLoginForm(boolean hasLoginForm) {
-        this.hasLoginForm = hasLoginForm;
-    }
-
-    public int getInternalLinks() {
-        return internalLinks;
-    }
-
-    public int getExternalLinks() {
-        return externalLinks;
-    }
-
-    public void setInternalLinks(int internalLinks) {
-        this.internalLinks = internalLinks;
-    }
-
-    public void setExternalLinks(int externalLinks) {
-        this.externalLinks = externalLinks;
-    }
-
-    public Map<String, Integer> getHyperLinksMap() {
-        return hyperLinksMap;
-    }
-
 }

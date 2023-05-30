@@ -7,20 +7,20 @@ import scout24.techChallenge.rest.response.WrappedResponse;
 public abstract class BasicResource {
 
     /**
-     * @param WrappedResponse
-     * @return Response
-     * <p>
-     * Method for json serialization of WrappedResonse from Services. WrappedResponse can contain errors if any exception occurs
+     *
+     * @param wrappedResponse
+     * @return
+     * @param <T>
      */
-    protected <T> ResponseEntity<String> getObjectMapperResponse(WrappedResponse<T> wrappedResponse) {
+    protected <T> ResponseEntity<WrappedResponse<?>> getObjectMapperResponse(WrappedResponse<T> wrappedResponse) {
 
         if (wrappedResponse.isSuccess())
-            return ResponseEntity.ok(wrappedResponse.getResponse());
+            return ResponseEntity.ok(wrappedResponse);
 
         /*
          * Response with errors
          */
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(wrappedResponse.getResponse());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(wrappedResponse);
 
     }
 
