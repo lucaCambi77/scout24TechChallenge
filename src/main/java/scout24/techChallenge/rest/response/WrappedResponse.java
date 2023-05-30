@@ -12,11 +12,7 @@ public class WrappedResponse<T> {
     private boolean success = true;
     private T entity;
     private Integer count;
-    private Long sequence;
-    private List<String> errorMessage = new ArrayList<String>();
-    private List<String> succededMessage;
-    private String developerMessage;
-    private String locale;
+    private List<String> errorMessage = new ArrayList<>();
     private String response;
 
     @JsonIgnore
@@ -42,15 +38,6 @@ public class WrappedResponse<T> {
         return this;
     }
 
-    public Integer getCount() {
-        return count;
-    }
-
-    public WrappedResponse<T> setCount(Integer count) {
-        this.count = count;
-        return this;
-    }
-
     public boolean isSuccess() {
         return success;
     }
@@ -58,22 +45,6 @@ public class WrappedResponse<T> {
     public WrappedResponse<T> setSuccess(boolean success) {
         this.success = success;
         return this;
-    }
-
-    public Long getSequence() {
-        return sequence;
-    }
-
-    public void setSequence(Long sequence) {
-        this.sequence = sequence;
-    }
-
-    public String getDeveloperMessage() {
-        return developerMessage;
-    }
-
-    public void setDeveloperMessage(String developerMessage) {
-        this.developerMessage = developerMessage;
     }
 
     public List<String> getErrorMessage() {
@@ -86,14 +57,6 @@ public class WrappedResponse<T> {
         return this;
     }
 
-    public List<String> getSuccededMessage() {
-        return succededMessage;
-    }
-
-    public void setSuccededMessage(List<String> succededMessage) {
-        this.succededMessage = succededMessage;
-    }
-
     @JsonIgnore
     public Throwable getException() {
         return exception;
@@ -104,18 +67,7 @@ public class WrappedResponse<T> {
         return this;
     }
 
-    public String getLocale() {
-        return locale;
-    }
-
-    public WrappedResponse<T> setLocale(String locale) {
-        this.locale = locale;
-        return this;
-    }
-
     public WrappedResponse<T> processException() {
-
-        setSuccess(false).setCount(0);
 
         getErrorMessage().add(getException().getMessage());
 

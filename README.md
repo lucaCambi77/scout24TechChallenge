@@ -24,5 +24,5 @@ It is a spring-boot application we can run with Scout24Application
 
 Angular application we can run in /web folder:
 
-- npm start
+- ng serve
  

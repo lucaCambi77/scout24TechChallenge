@@ -49,7 +49,7 @@ public class UrlContentResource extends BasicResource {
             List<String> errors = new ArrayList<>();
             errors.add("Not a valid Url");
 
-            return getObjectMapperResponse(new WrappedResponse<Boolean>().setCount(0).setSuccess(false).setErrorMessages(errors).setResponse());
+            return getObjectMapperResponse(new WrappedResponse<Boolean>().setSuccess(false).setErrorMessages(errors).setResponse());
 
         }
 
@@ -136,11 +136,11 @@ public class UrlContentResource extends BasicResource {
          *
          */
         int linkListSize = linksList.size();
-        int numberOfThreads = (int) Math.ceil(linkListSize / 20);
+        int numberOfThreads = (int) Math.ceil((double) linkListSize / 20);
 
         ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads == 0 ? 1 : numberOfThreads);
 
-        List<FutureTask<Map<String, Integer>>> taskList = new ArrayList<FutureTask<Map<String, Integer>>>();
+        List<FutureTask<Map<String, Integer>>> taskList = new ArrayList<>();
 
         int start = 1, end = 0;
 
@@ -164,9 +164,9 @@ public class UrlContentResource extends BasicResource {
 
         // Wait until all results are available and combine them at the same time
         for (FutureTask<Map<String, Integer>> futureTask : taskList) {
-
-            site.getHyperLinksMap().add(futureTask.get());
-
+            for (Map.Entry<String, Integer> stringIntegerEntry : futureTask.get().entrySet()) {
+                site.getHyperLinksMap().put(stringIntegerEntry.getKey(), stringIntegerEntry.getValue());
+            }
         }
 
         site.setInternalLinks(internalLinks);
@@ -193,12 +193,12 @@ public class UrlContentResource extends BasicResource {
     private void setGroupedHeadings(Document doc, Site site) {
         Elements hTags = doc.select("h1, h2, h3, h4, h5, h6");
 
-        site.addToHeadingTags("h1", hTags.select("h1").size())
-                .addToHeadingTags("h2", hTags.select("h2").size())
-                .addToHeadingTags("h3", hTags.select("h3").size())
-                .addToHeadingTags("h4", hTags.select("h4").size())
-                .addToHeadingTags("h5", hTags.select("h5").size())
-                .addToHeadingTags("h6", hTags.select("h6").size());
+        site.getHeadingTags().put("h1", hTags.select("h1").size());
+        site.getHeadingTags().put("h2", hTags.select("h1").size());
+        site.getHeadingTags().put("h3", hTags.select("h1").size());
+        site.getHeadingTags().put("h4", hTags.select("h1").size());
+        site.getHeadingTags().put("h5", hTags.select("h1").size());
+        site.getHeadingTags().put("h6", hTags.select("h1").size());
     }
 
     /**
