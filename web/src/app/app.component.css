@@ -1,0 +1,11 @@
+input {
+    padding: .5rem;
+    width: 100%;
+    max-width: 600px;
+    box-sizing: border-box;
+    display: block;
+}
+
+input:focus {
+    outline: #336699 auto 1px;
+}
